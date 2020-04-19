@@ -13,58 +13,62 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 
-namespace tryYield
+namespace TryYield
 {
-    class Program
+  class Program
+  {
+    private static Stopwatch _traditionalStopwatch = new Stopwatch();
+    private static Stopwatch _yieldStopwatch = new Stopwatch();
+
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            Test1();
-            Test2();
-            Console.Read();
-        }
+      Test1();
+      Test2();
 
-        private static void Test1()
-        {
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
-            int[] a = new int[10];
-            a = Generator1(2, 10);
-            for (int i = 0; i < 10; i++)
-            {
-                Console.Write(a[i]);
-            }
-            timer.Stop();
-            Console.WriteLine($"Time taken: {timer.Elapsed}");
-        }
-
-        private static int[] Generator1(int start, int number)
-        {
-            int[] n = new int[number];
-            for (int i = 0; i < number; i++)
-            {
-                n[i] = start + 2 * i;
-            }
-            return n;
-        }
-
-        private static void Test2()
-        {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            foreach (var item in Generator2(2, 10))
-            {
-                Console.Write(item);
-            }
-            sw.Stop();
-            Console.WriteLine($"Time taken: {sw.Elapsed}");
-        }
-        private static IEnumerable Generator2(int start, int number)
-        {
-            for (int i = 0; i < number; i++)
-            {
-                yield return start + 2 * i;
-            }
-        }
+      Console.WriteLine();
+      Console.WriteLine($"Traditional elapsed time: {_traditionalStopwatch.Elapsed}");
+      Console.WriteLine($"Yield-return elapsed time: {_yieldStopwatch.Elapsed}");
+      Console.WriteLine($"Yield-return is {Math.Round(_traditionalStopwatch.Elapsed / _yieldStopwatch.Elapsed)}x faster.");
     }
+
+    private static void Test1()
+    {
+      _traditionalStopwatch.Start();
+      int[] a = new int[100];
+      a = Generator1(2, 100);
+      for (int i = 0; i < 100; i++)
+      {
+        Console.Write(a[i]);
+      }
+      _traditionalStopwatch.Stop();
+    }
+
+    private static int[] Generator1(int start, int number)
+    {
+      int[] n = new int[number];
+      for (int i = 0; i < number; i++)
+      {
+        n[i] = start + 2 * i;
+      }
+      return n;
+    }
+
+    private static void Test2()
+    {
+      _yieldStopwatch.Start();
+      foreach (var item in Generator2(2, 100))
+      {
+        Console.Write(item);
+      }
+      _yieldStopwatch.Stop();
+    }
+
+    private static IEnumerable Generator2(int start, int number)
+    {
+      for (int i = 0; i < number; i++)
+      {
+        yield return start + 2 * i;
+      }
+    }
+  }
 }
